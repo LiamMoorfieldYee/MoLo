@@ -21,10 +21,10 @@ gather_data <- function() {
                        daily.2002, daily.2003, daily.2004, daily.2005,
                        daily.2006, daily.2007)
 
-    all.daily$week <- week(all.daily$v.date)
+    all.daily$wk <- week(all.daily$v.date)
     all.daily <- tbl_df(all.daily)
 
-    weekly <- all.daily %>% group_by(week, id) %>% summarise(avg.price = mean(price))
+    weekly <- all.daily %>% group_by(wk, id) %>% summarise(avg.price = mean(price))
     return(weekly)
     ##x <- merge(daily.1998, secref, by = names(daily.1998))
     ##x <- tbl_df(x)

@@ -26,9 +26,9 @@ The 4/C Ratio is a performance ratio and is calculated by taking a stocks curren
 
 ##4/C Graph
 ```{r}
-weekly <- x %>% mutate(C4 = avg.price[week+4]/avg.price) 
-weekly %>% arrange(week) %>% summarise(avg.week = mean(C4)) %>% 
-    ggplot(aes(week, avg.week)) + geom_line()
+weekly <- x %>% mutate(C4 = avg.price[wk+4]/avg.price) 
+weekly %>% arrange(wk) %>% summarise(avg.week = mean(C4)) %>% 
+    ggplot(aes(wk, avg.week)) + geom_line()
 ```
 
 
@@ -38,9 +38,9 @@ The 26/C Ratio is another performance ratio and is calculated by taking a stocks
 
 ##26/C graph
 ```{r}
-weekly2 <- x %>% mutate(C26 = avg.price[week+26]/avg.price)
-weekly2 %>% arrange(week) %>% summarise(avg.week = mean(C26)) %>% 
-    ggplot(aes(week, avg.week)) + geom_line()
+weekly2 <- x %>% mutate(C26 = avg.price[wk+26]/avg.price)
+weekly2 %>% arrange(wk) %>% summarise(avg.week = mean(C26)) %>% 
+    ggplot(aes(wk, avg.week)) + geom_line()
 ```
 
 ##Literature Review
