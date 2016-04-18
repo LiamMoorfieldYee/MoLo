@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "---\rtitle: \"Levy Replication\"\routput: html_document\r---\r\r```{r setup, include=FALSE}\rknitr::opts_chunk$set(echo = TRUE)\rlibrary(LoMo)\rlibrary(ws.data)\rlibrary(lubridate)\rlibrary(dplyr)\rlibrary(ggplot2)\r```\r\r\r```{r, echo=FALSE}\rx <- gather_data()\r```\r\r##Introduction\rWelcome to Liam and David's replication paper. In this segment we will be attempting, and failing badly, at replicating the results of Levy's \"Relative Strength as a Criterion for Investment Selection\". Thus far, we have attempted to replicate two of the three variables used for the analysis in the paper. In addition, there will be a literature review section where we engage in a lively conversation about similar pieces of work. \r\r\r##4/C Ratio\rThe 4/C Ratio is a performance ratio and is calculated by taking a stocks current weekly price average and dividing it into the stocks price four weeks into the future. \r\r##4/C Graph\r```{r}\rweekly <- x %>% mutate(C4 = avg.price[week+4]/avg.price) \rweekly %>% arrange(week) %>% summarise(avg.week = mean(C4)) %>% \r    ggplot(aes(week, avg.week)) + geom_line()\r```\r\r\r\r##26/C Ratio\rThe 26/C Ratio is another performance ratio and is calculated by taking a stocks current weekly price average and dividing it into the stock price 26 weeks into the future. \r\r##26/C graph\r```{r}\rweekly2 <- x %>% mutate(C26 = avg.price[week+26]/avg.price)\rweekly2 %>% arrange(week) %>% summarise(avg.week = mean(C26)) %>% \r    ggplot(aes(week, avg.week)) + geom_line()\r```\r\r",
+    "created" : 1460999439661.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3504599775",
+    "id" : "DFEAB9A4",
+    "lastKnownWriteTime" : 1460999469,
+    "last_content_update" : 1460999469174,
+    "path" : "~/Desktop/MoLo/Paper.Rmd",
+    "project_path" : "Paper.Rmd",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

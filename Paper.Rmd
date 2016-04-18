@@ -1,0 +1,45 @@
+---
+title: "Levy Replication"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(LoMo)
+library(ws.data)
+library(lubridate)
+library(dplyr)
+library(ggplot2)
+```
+
+
+```{r, echo=FALSE}
+x <- gather_data()
+```
+
+##Introduction
+Welcome to Liam and David's replication paper. In this segment we will be attempting, and failing badly, at replicating the results of Levy's "Relative Strength as a Criterion for Investment Selection". Thus far, we have attempted to replicate two of the three variables used for the analysis in the paper. In addition, there will be a literature review section where we engage in a lively conversation about similar pieces of work. 
+
+
+##4/C Ratio
+The 4/C Ratio is a performance ratio and is calculated by taking a stocks current weekly price average and dividing it into the stocks price four weeks into the future. 
+
+##4/C Graph
+```{r}
+weekly <- x %>% mutate(C4 = avg.price[week+4]/avg.price) 
+weekly %>% arrange(week) %>% summarise(avg.week = mean(C4)) %>% 
+    ggplot(aes(week, avg.week)) + geom_line()
+```
+
+
+
+##26/C Ratio
+The 26/C Ratio is another performance ratio and is calculated by taking a stocks current weekly price average and dividing it into the stock price 26 weeks into the future. 
+
+##26/C graph
+```{r}
+weekly2 <- x %>% mutate(C26 = avg.price[week+26]/avg.price)
+weekly2 %>% arrange(week) %>% summarise(avg.week = mean(C26)) %>% 
+    ggplot(aes(week, avg.week)) + geom_line()
+```
+
