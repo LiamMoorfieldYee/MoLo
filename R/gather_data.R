@@ -31,6 +31,8 @@ gather_data <- function() {
 
     all.daily <- tbl_df(all.daily)
 
+    all.daily <- all.daily %>% rename( date = v.date)
+
     return(all.daily)
     ##x <- merge(daily.1998, secref, by = names(daily.1998))
     ##x <- tbl_df(x)
