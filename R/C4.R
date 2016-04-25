@@ -3,9 +3,10 @@ C4 <- function(){
     ## Importing data.
     x <- gather_data()
 
-    ## Subsetting Friday's.
+    ## Subsetting Friday's. If Friday is not available the next closest day
+    ## is used.
 
-    x <- x %>% filter(wday(date)==6)
+    x <- x %>% group_by(id, wk) %>% filter(wday(date)==max(wday(date)))
 
     ## Grabbing the price of each stock 4 weeks in advance using the lead
     ## function. Where price is the variable being stored, "n" is the number

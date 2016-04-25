@@ -7,7 +7,7 @@ CA26 <- function() {
 
     ##Calculating prior 26 week moving average and C/A26 daily ratio.
     x <- x %>% group_by(id) %>%
-        mutate(avg26 = roll_mean(price, 130, fill = NA)) %>%
+        mutate(avg26 = roll_mean(price, 130, fill = NA, align = "right")) %>%
         mutate(ca26.daily = avg.price/avg26)
 
 
@@ -20,7 +20,7 @@ CA26 <- function() {
     ## Removing the dates that aren't being used and subsetting data
     ## only keeping Fridays.
     x <- x[!is.na(x$ca26.ratio),]
-    x <- x %>% filter(wday(date)==6)
+    x <- x %>% group_by(id, wk) %>% filter(wday(date)==max(wday(date)))
 
     ## Ranking stocks based on their relative strength.
 

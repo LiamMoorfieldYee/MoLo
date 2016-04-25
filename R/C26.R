@@ -6,7 +6,7 @@ C26 <- function(){
     ## a factor (Sunday = 0 and Saturday = 7). Filtering by wday(date) == 6 subsets
     ## data so that there is only one day per week.
 
-    x <- x %>% filter(wday(date)==6)
+    x <- x %>% group_by(id, wk) %>% filter(wday(date)==max(wday(date)))
 
     ## Grabbing the price of each stock 4 weeks in advance using the lead
     ## function. Where price is the variable being stored, "n" is the number
