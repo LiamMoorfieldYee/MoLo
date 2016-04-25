@@ -2,8 +2,9 @@ Package: MoLo
 Type: Package
 Title: What the Package Does (Title Case)
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
+Author: Liam Moorfield-Yee && David Loughborough
+Maintainer: lmoorfieldyee@middlebury.edu
+Description: Analyzes stock data from 1998-2007 to see how relative strengths of
+stocks effects future performance.
 License: What license is it under?
 LazyData: TRUE
