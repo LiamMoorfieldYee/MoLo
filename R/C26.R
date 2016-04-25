@@ -24,7 +24,7 @@ C26 <- function(){
     ##relative strengths for each week.
 
     x <- x[!is.na(x$c26),]
-    x <- x %>% select(id, symbol, name, wk, date, price, c26)
+    x <- x %>% select(id, symbol, name, wk, date, price, wk26price, c26)
 
     ##Ranking stocks based on their relative strength.
 
