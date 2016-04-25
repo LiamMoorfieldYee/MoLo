@@ -10,8 +10,7 @@ CA26 <- function() {
         mutate(avg26 = roll_mean(price, 130, fill = NA)) %>%
         mutate(ca26.daily = avg.price/avg26)
 
-    ##Ensuring date time is in proper format.
-    x$date = ymd(x$date)
+
 
 
     ## Creating the C/A26 ratio by taking the mean of the weekly

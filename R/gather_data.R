@@ -21,6 +21,7 @@ gather_data <- function() {
                        daily.2002, daily.2003, daily.2004, daily.2005,
                        daily.2006, daily.2007)
 
+
     all.daily <- mutate(all.daily, year = year(v.date),
                         wk = paste(week(v.date), year, sep = "-"))
 
