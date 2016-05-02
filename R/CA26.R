@@ -42,9 +42,6 @@ CA26 <- function() {
 
 
 
-
-
-
     ## Creating the C/A26 ratio by taking the mean of the weekly
     ## C/A26 daily ratio. This ratio is the average daily ca26 ratios for the week.
 
