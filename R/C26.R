@@ -21,8 +21,8 @@ C26 <- function(){
     x <- x %>% mutate(c26 = wk26price/price)
 
     stopifnot(
-        round(subset(x, wk == "1-2004" & symbol == "IBM", select = "c26"), 6) == .950737,
-        round(subset(x, wk == "5-2005" & symbol == "GOOG", select = "c26"), 6) == 1.430564
+        round(subset(x, date == "1998-01-02" & symbol == "IBM", select = "c26"), 6) == 1.121893,
+        round(subset(x, date == "2004-09-01" & symbol == "GOOG", select = "c26"), 6) == 1.808978
     )
     ##Cleaning and arranging data so that stocks are ordered according to their
     ##relative strengths for each week.

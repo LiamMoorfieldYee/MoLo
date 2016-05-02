@@ -14,7 +14,7 @@ C4 <- function(){
     ## is how the id groups are being ordered.
 
     x <- x %>% group_by(id) %>%
-        mutate(wk4price = lead(price, n = 4, order_by = date))
+        mutate(wk4price = lead(price, n = 20, order_by = date))
 
 
     ##Calculating the C4 metric.
