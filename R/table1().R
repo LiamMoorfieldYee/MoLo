@@ -1,6 +1,11 @@
 table1 <- function() {
     x <- CA26()
 
+    ## Removing a couple outliers in the data.
+
+    x <- x %>% filter(!symbol=="CKXE")
+    x <- x %>% filter(!symbol=="3STTCE")
+
     ## only keeping Fridays. If Friday is not a trading day then the last trading
     ## day of the week is used.
 
@@ -36,7 +41,7 @@ table1 <- function() {
                                      avg.C4.rank = mean(c4.rank),
                                      avg.c26.ratios = mean(c26),
                                      avg.c26.rank = mean(c26.rank))
-    all.stock.avg <- all.stock.avg %>% mutate(groupings = "all stocks")
+    all.stock.avg <- all.stock.avg %>% mutate(groupings = 11)
 
     table.data <- rbind(group.avgs, all.stock.avg)
 
