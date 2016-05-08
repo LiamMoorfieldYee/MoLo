@@ -56,29 +56,20 @@ CA26 <- function() {
     x <- left_join(x, y, by = "wk")
 
     ## Removing the dates that aren't being used and subsetting data
-    ## only keeping Fridays. If Friday is not a trading day then the last trading
-    ## day of the week is used.
 
     x <- x[!is.na(x$ca26.ratio),]
-    x <- x %>% group_by(id, wk) %>% filter(wday(date)==max(wday(date)))
+    x <- x[!is.na(x$c4),]
+    x <- x[!is.na(x$c26),]
 
-    ## Ranking stocks based on their relative strength for each week. The
-    ## stocks are grouped by week then each stock is ranked based on its
-    ## ca26.ratio using the row_number function. Default method for the row_number
-    ## function is to assign the lowest values the lowest rank, but we want the
-    ## opposite of this so that we call the function with -ca26.ratio as its
-    ## argument.
-
-    x <- x %>% group_by(wk) %>% mutate(CA26.rank = row_number(-ca26.ratio))
-    x <- x %>% group_by(wk) %>% arrange(ranks)
 
     ## Cleaning and arranging data so that stocks are ordered according to their
     ## relative strengths for each week.
 
     x <- x %>% select( symbol, name, date, wk, ca26.ratio, price, variation26,
-                      ranks, wk4price, wk26price, c4, c26, CA26.rank)
-    x <- x %>% group_by(wk) %>% arrange(ranks)
+                       wk4price, wk26price, c4, c26, market.rank, m.sec, m.ind, tret)
+
 
 
     return(x)
+
 }
