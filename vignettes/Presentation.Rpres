@@ -1,0 +1,47 @@
+Relative Strength as a Criterion for Investment Selection
+========================================================
+author: David Loughborough and Liam Moorfield-Yee
+date: May 9, 2016
+
+Introduction
+========================================================
+
+- Written by Robert A. Levy in 1967.
+- Attempts to find a relationship between a stocks past and future performance.
+- Groups stocks into deciles based on how they have performed in the past 26 weeks.
+
+C/A26 Ratio
+========================================================
+
+- Historical ratio used to rank and group stocks.
+- The current weeks' avergae price divided by the prior 26 week rolling price average.
+
+```{r, echo=FALSE}
+library(ggplot2)
+library(dplyr)
+library(MoLo)
+y <- CA26()
+y <- y %>% filter(symbol=="GOOG")
+y %>% ggplot(aes(date)) + geom_line(aes(y=price, color="Price")) + geom_line(aes(y=ca26.ratio*300, colour="C/A26 Ratio"))
+```
+
+C4 Ratio
+========================================================
+
+- Short term performance indicator.
+- Takes a stocks price 4 weeks in the future and divdes that by the current price.
+- All prices are taken on Friday or the latest trading day of that week.
+```{r, echo=FALSE}
+y %>% ggplot(aes(date)) + geom_line(aes(y=price, color="Price")) + geom_line(aes(y=c4*300, colour="C4 Ratio"))
+```
+
+C26 Ratio
+========================================================
+
+- Medium term performance indicator.
+- Takes a stocks price 26 weeks in the future and divides that by the current price.
+- All prices are taken on Friday or latest trading day of that week.
+```{r, echo=FALSE}
+
+y %>% ggplot(aes(date)) + geom_line(aes(y=price, color="Price")) + geom_line(aes(y=c26*300, colour="C26 Ratio"))
+```
