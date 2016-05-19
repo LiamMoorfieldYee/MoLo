@@ -52,7 +52,8 @@ CA26 <- function() {
     ## the summarise command for each week. The sum for each week is assigned to y
     ## and then y is mergerd back to x using left_join.
 
-    y <- x %>% group_by(wk) %>% summarise(market.rank = sum(ca26.ratio, na.rm = TRUE))
+    y <- x %>% group_by(wk) %>% summarise(market.performance = sum(ca26.ratio, na.rm = TRUE))
+    y <- y %>% mutate(market.rank = row_number(-market.performance))
     x <- left_join(x, y, by = "wk")
 
     ## Removing the dates that aren't being used and subsetting data
@@ -66,7 +67,7 @@ CA26 <- function() {
     ## relative strengths for each week.
 
     x <- x %>% select( symbol, name, date, wk, ca26.ratio, price, variation26,
-                       wk4price, wk26price, c4, c26, market.rank, m.sec, m.ind, tret)
+                       wk4price, wk26price, c4, c26, market.performance, m.sec, m.ind, market.rank)
 
 
 

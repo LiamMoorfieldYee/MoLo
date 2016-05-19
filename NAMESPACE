@@ -2,6 +2,7 @@
 
 
 export(gather_data)
+export(table2)
 export(C4)
 export(C26)
 export(CA26)
