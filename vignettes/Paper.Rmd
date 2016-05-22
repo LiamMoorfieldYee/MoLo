@@ -4,44 +4,277 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
 library(MoLo)
 library(ws.data)
 library(lubridate)
 library(dplyr)
 library(ggplot2)
+library(gridExtra)
 ```
 
 
-```{r, echo=FALSE}
-x <- gather_data()
+```{r, echo = FALSE}
+## Loading data into variable "y". Subsetting data to only include Friday's. If Friday is not
+## available for the given week, then the next available trading day is used.
+
+y <- CA26()
+y <- y %>% group_by(id, wk) %>% filter(wday(date)==max(wday(date)))
+
+## For each week ranking stocks based on their historical CA/26 ratio, 4/C ratio, 26/C ratio,
+## volatility ratio, and 52/C ratio.
+
+y <- y %>% group_by(wk) %>% mutate(CA26.rank = row_number(-ca26.ratio)) %>%
+    mutate(c4.rank = row_number(row_number(-c4))) %>% 
+    mutate(c26.rank = row_number(-c26)) %>% 
+    mutate(vol.rank = row_number(-variation26)) %>% 
+    mutate(c52.rank = row_number(-c52))
+
+
+
+```
+<h1>
+    <center>TABLE 1</center>
+</h1>
+
+
+
+```{r echo=FALSE}
+## Assigning variable "x" the updated data for analysis.
+x <- y
+
+## Splitting data up into 10 groups based on decile ranks of CA26 rankings.
+
+x <- x %>% ungroup() %>% arrange(CA26.rank) %>%
+    mutate(groupings = ntile(CA26.rank, 10))
+
+## Creating 4C and 26C summary averages based on 26AC group rankings.
+## Creating table 1.
+
+group.avgs <- x %>% group_by(groupings) %>% summarize(avg.C4.ratios = mean(c4),
+                                              avg.C4.rank = mean(c4.rank),
+                                              avg.c26.ratios = mean(c26),
+                                              avg.c26.rank = mean(c26.rank))
+
+all.stock.avg <- x %>% summarize(avg.C4.ratios = mean(c4),
+                                 avg.C4.rank = mean(c4.rank),
+                                 avg.c26.ratios = mean(c26),
+                                 avg.c26.rank = mean(c26.rank))
+all.stock.avg <- all.stock.avg %>% mutate(groupings = "all stocks")
+
+table.data1 <- rbind(group.avgs, all.stock.avg)
+
+
+
+grid.table(table.data1)
+
 ```
 
+
+
+<h1>
+    TABLE 2 - A
+    4-Week Performance By Stock Group As Classified To Historical Relative 
+    Strength Ranks And Subclassified According To Historical Volatility Ranks
+</h1>
+
+```{r echo = FALSE}
+
+## Resetting x variable to clean dataset.
+
+x <- y
+
+ ## Splitting data up into 3 groups based on volatility ranks and arranging based
+    ## on those groups. Group 1 consists of the most volatile stock, group 2 consists
+    ## of the somewhat volatile stocks, and group 4 consists of the least volatile stocks.
+    ## Setting 3 == 2, so that group 2 consists of the middle 50% volatile stocks.
+
+    x <- x %>% ungroup() %>% arrange(vol.rank) %>%
+        mutate(groupings = ntile(vol.rank, 4))
+    x <- x %>% mutate(groupings=replace(groupings, groupings==3, 2))
+
+    ## Subsetting data into separate dataframes based on their groupings for analysis.
+
+    x1 <- subset(x, groupings==1)
+    x2 <- subset(x, groupings==2)
+    x4 <- subset(x, groupings==4)
+
+
+    ## Within each volatility group, breaking up stocks into deciles based on their CA26 ranks.
+
+    x1 <- x1 %>% ungroup() %>% arrange(CA26.rank) %>%
+        mutate(ca26groupings = ntile(CA26.rank, 10))
+    x2 <- x2 %>% ungroup() %>% arrange(CA26.rank) %>%
+        mutate(ca26groupings = ntile(CA26.rank, 10))
+    x4 <- x4 %>% ungroup() %>% arrange(CA26.rank) %>%
+        mutate(ca26groupings = ntile(CA26.rank, 10))
+
+
+    ## Creating 4C and 26C summary averages based on 26AC group rankings.
+    ## Creating table 1.
+
+    group1.avgs <- x1 %>% group_by(ca26groupings) %>% summarize(avg.C4.ratios = mean(c4),
+                                                          avg.C4.rank = mean(c4.rank),
+                                                          avg.C26.ratios = mean(c26),
+                                                          avg.C26.rank = mean(c26.rank))
+
+    all.stocks.x1 <- x1 %>% ungroup() %>% summarize(avg.C4.ratios = mean(c4),
+                                                    avg.C4.rank = mean(c4.rank),
+                                                    avg.C26.ratios = mean(c26),
+                                                    avg.C26.rank = mean(c26.rank))
+    all.stocks.x1$ca26groupings <- "all stocks"
+    x1 <- rbind(group1.avgs, all.stocks.x1)
+
+    group2.avgs <- x2 %>% group_by(ca26groupings) %>% summarize(avg.C4.ratios = mean(c4),
+                                                                avg.C4.rank = mean(c4.rank),
+                                                                avg.C26.ratios = mean(c26),
+                                                                avg.C26.rank = mean(c26.rank))
+
+    all.stocks.x2 <- x2 %>% ungroup() %>% summarize(avg.C4.ratios = mean(c4),
+                                                    avg.C4.rank = mean(c4.rank),
+                                                    avg.C26.ratios = mean(c26),
+                                                    avg.c26.rank = mean(c26.rank))
+    all.stocks.x2$ca26groupings <- "all stocks"
+    x2 <- rbind(group2.avgs, all.stocks.x2)
+
+    group4.avgs <- x4 %>% group_by(ca26groupings) %>% summarize(avg.C4.ratios = mean(c4),
+                                                                avg.C4.rank = mean(c4.rank),
+                                                                avg.C26.ratios = mean(c26),
+                                                                avg.C26.rank = mean(c26.rank))
+
+    all.stocks.x4 <- x4 %>% ungroup() %>% summarize(avg.C4.ratios = mean(c4),
+                                                    avg.C4.rank = mean(c4.rank),
+                                                    avg.C26.ratios = mean(c26),
+                                                    avg.C26.rank = mean(c26.rank))
+    all.stocks.x4$ca26groupings <- "all stocks"
+    x4 <- rbind(group4.avgs, all.stocks.x4)
+
+    x1.x2 <- left_join(x1, x2, by = "ca26groupings")
+    all.data <- left_join(x1.x2, x4, by = "ca26groupings")
+    
+    
+    grid.table(all.data %>% select(groupings, avg.C4.ratios.x, avg.C4.rank.x, avg.C4.ratios.y,
+                                   avg.C4.rank.y, avg.C4.ratios, avg.C4.rank))
+
+```
+
+<h1>
+    TABLE 2 - B
+    4-Week Performance By Stock Group As Classified To Historical Relative 
+    Strength Ranks And Subclassified According To Historical Volatility Ranks
+</h1>
+
+```{r echo = FALSE}
+
+grid.table(all.data %>% select(groupings, avg.C26.ratios.x, avg.C26.rank.x, avg.C26.ratios.y,
+                                   avg.C26.rank.y, avg.C26.ratios, avg.C26.rank))
+
+```
+
+<h1>
+    TABLE 3 - A
+    4-Week Performance By Stock Group As Classified To Historical Relative 
+    Strength Ranks And Subclassified According To Historical Long-Term Market Ranks
+</h1>
+
+```{r echo = FALSE}
+
+## Setting x to clean dataset.
+
+x <- y
+
+## Splitting data up into 3 groups based on market ranks and arranging based
+    ## on those groups. Group 1 consists of the stocks within the strongest performing weeks,
+    ## group 2 consists of the stocks in the average performing weeks, and group 4
+    ## consists of the stocks in the weekest markets. Setting 3 == 2,
+    ## so that group 2 consists of the middle 50% of stocks.
+
+    x <- x %>% ungroup() %>% arrange(market.rank) %>%
+        mutate(groupings = ntile(market.rank, 4))
+    x <- x %>% mutate(groupings=replace(groupings, groupings==3, 2))
+
+    ## Subsetting data into separate dataframes based on their groupings for analysis.
+
+    x1 <- subset(x, groupings==1)
+    x2 <- subset(x, groupings==2)
+    x4 <- subset(x, groupings==4)
+
+
+    ## Within each volatility group, breaking up stocks into deciles based on their CA26 ranks.
+
+    x1 <- x1 %>% ungroup() %>% arrange(CA26.rank) %>%
+        mutate(ca26groupings = ntile(CA26.rank, 10))
+    x2 <- x2 %>% ungroup() %>% arrange(CA26.rank) %>%
+        mutate(ca26groupings = ntile(CA26.rank, 10))
+    x4 <- x4 %>% ungroup() %>% arrange(CA26.rank) %>%
+        mutate(ca26groupings = ntile(CA26.rank, 10))
+
+
+    ## Creating 4C and 26C summary averages based on 26AC group rankings.
+    ## Creating table 1.
+
+    group1.avgs <- x1 %>% group_by(ca26groupings) %>% summarize(avg.C4.ratios = mean(c4),
+                                                                avg.C4.rank = mean(c4.rank),
+                                                                avg.C26.ratios = mean(c26),
+                                                                avg.C26.rank = mean(c26.rank))
+
+    all.stocks.x1 <- x1 %>% ungroup() %>% summarize(avg.C4.ratios = mean(c4),
+                                                    avg.C4.rank = mean(c4.rank),
+                                                    avg.C26.ratios = mean(c26),
+                                                    avg.C26.rank = mean(c26.rank))
+    all.stocks.x1$ca26groupings <- "all stocks"
+    x1 <- rbind(group1.avgs, all.stocks.x1)
+
+    group2.avgs <- x2 %>% group_by(ca26groupings) %>% summarize(avg.C4.ratios = mean(c4),
+                                                                avg.C4.rank = mean(c4.rank),
+                                                                avg.C26.ratios = mean(c26),
+                                                                avg.C26.rank = mean(c26.rank))
+
+    all.stocks.x2 <- x2 %>% ungroup() %>% summarize(avg.C4.ratios = mean(c4),
+                                                    avg.C4.rank = mean(c4.rank),
+                                                    avg.C26.ratios = mean(c26),
+                                                    avg.C26.rank = mean(c26.rank))
+    all.stocks.x2$ca26groupings <- "all stocks"
+    x2 <- rbind(group2.avgs, all.stocks.x2)
+
+    group4.avgs <- x4 %>% group_by(ca26groupings) %>% summarize(avg.C4.ratios = mean(c4),
+                                                                avg.C4.rank = mean(c4.rank),
+                                                                avg.C26.ratios = mean(c26),
+                                                                avg.C26.rank = mean(c26.rank))
+
+    all.stocks.x4 <- x4 %>% ungroup() %>% summarize(avg.C4.ratios = mean(c4),
+                                                    avg.C4.rank = mean(c4.rank),
+                                                    avg.C26.ratios = mean(c26),
+                                                    avg.C26.rank = mean(c26.rank))
+    all.stocks.x4$ca26groupings <- "all stocks"
+    x4 <- rbind(group4.avgs, all.stocks.x4)
+
+    x1.x2 <- left_join(x1, x2, by = "ca26groupings")
+    all.data <- left_join(x1.x2, x4, by = "ca26groupings")
+    
+     grid.table(all.data %>% select(groupings, avg.C4.ratios.x, avg.C4.rank.x,
+                                    avg.C4.ratios.y, avg.C4.rank.y, avg.C4.ratios,
+                                    avg.C4.rank))
+
+
+```
+
+<h1>
+    TABLE 3 - B
+    26-Week Performance By Stock Group As Classified To Historical Relative 
+    Strength Ranks And Subclassified According To Historical Long-Term Market Ranks
+</h1>
+
+```{r echo = FALSE}
+
+ grid.table(all.data %>% select(groupings, avg.C26.ratios.x, avg.C26.rank.x, avg.C26.ratios.y,
+                                   avg.C26.rank.y, avg.C26.ratios, avg.C26.rank))
+
+```
 ##Introduction
 Welcome to Liam and David's replication paper. In this segment we will be attempting, and failing badly, at replicating the results of Levy's "Relative Strength as a Criterion for Investment Selection". Thus far, we have attempted to replicate two of the three variables used for the analysis in the paper. In addition, there will be a literature review section where we engage in a lively conversation about similar pieces of work. 
 
 
-##4/C Ratio
-The 4/C Ratio is a performance ratio and is calculated by taking a stocks current weekly price average and dividing it into the stocks price four weeks into the future. 
-
-##4/C Graph
-```{r}
-weekly <- x %>% mutate(C4 = avg.price[wk+4]/avg.price) 
-weekly %>% arrange(wk) %>% summarise(avg.week = mean(C4)) %>% 
-    ggplot(aes(wk, avg.week)) + geom_line()
-```
-
-
-
-##26/C Ratio
-The 26/C Ratio is another performance ratio and is calculated by taking a stocks current weekly price average and dividing it into the stock price 26 weeks into the future. 
-
-##26/C graph
-```{r}
-weekly2 <- x %>% mutate(C26 = avg.price[wk+26]/avg.price)
-weekly2 %>% arrange(wk) %>% summarise(avg.week = mean(C26)) %>% 
-    ggplot(aes(wk, avg.week)) + geom_line()
-```
 
 ##Literature Review
 This paper analyzes relative strength as a way to decide which stocks to choose as a predictor of future returns.  The idea is to choose stocks on the basis of how they have performed relative to other stocks in their selected universe on the basis of current prices, volatility, and past returns.  The Levy paper is from 1967 and shows that this strategy works to provide outsized returns in 1960’s.  Obviously, this takes place roughly 50 years ago, so the question is whether it still holds true.  In 2010, Mebane Faber of Cambria Investments did a similar paper on relative strength titled “Relative Strength Strategies for Investing.”  This paper attacks the relative strength model from a different model, where instead of investing in individual securities, they will rank sectors based on their strength and total returns.  They will then invest in the top X sectors for their criteria.  They find that in their time periods, relative strength not only provides strong returns, but also that it outperforms a buy and hold method of investing in 70% of years.

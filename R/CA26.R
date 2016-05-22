@@ -16,8 +16,9 @@ CA26 <- function() {
     ## data point in the calculations. The daily26.ratio is calculated by taking
     ## the current weekly average (avg.price) and dividing it by the past 26 week price
     ## average (avg26). Calculating price of the stock four
-    ## weeks (20 days) in the future, and the price of the stock 26 weeks (130 days)
-    ## into the future. Then calculating the C4 ratio, which is the stocks price 4
+    ## weeks (20 days) in the future, the price of the stock 26 weeks (130 days), and the price
+    ## of the stock 52 weeks (260 days) into the future.
+    ##  Then calculating the C4 ratio, which is the stocks price 4
     ## weeks into the future divided by the current price, and the C26 ratio which
     ## is calculated by dividing the current price into the stocks price 26 weeks
     ## into the future.
@@ -29,8 +30,10 @@ CA26 <- function() {
         mutate(variation26 = std26/avg26) %>%
         mutate(wk4price = lead(price, n = 20)) %>%
         mutate(wk26price = lead(price, n = 130)) %>%
+        mutate(wk52price = lead(price, n = 260)) %>%
         mutate(c4 = wk4price/price) %>%
-        mutate(c26 = wk26price/price)
+        mutate(c26 = wk26price/price) %>%
+        mutate(c52 = wk52price/price)
 
 
     stopifnot(
@@ -66,10 +69,17 @@ CA26 <- function() {
     ## Cleaning and arranging data so that stocks are ordered according to their
     ## relative strengths for each week.
 
-    x <- x %>% select( symbol, name, date, wk, ca26.ratio, price, variation26,
-                       wk4price, wk26price, c4, c26, market.performance, m.sec, m.ind, market.rank)
+    x <- x %>% select( symbol, date, wk, ca26.ratio, price, variation26,
+                       wk4price, wk26price, c4, c26, market.performance, market.rank,
+                       wk52price, c52)
 
 
+    ## Getting rid of two outliers that are skewing data.
+
+    x <- x %>% filter(!symbol=="CKXE")
+    x <- x %>% filter(!symbol=="3STTCE")
+
+    ## Returning cleaned data set.
 
     return(x)
 

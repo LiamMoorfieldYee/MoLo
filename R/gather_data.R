@@ -1,3 +1,4 @@
+
 gather_data <- function() {
     library(ws.data)
     library(lubridate)
@@ -42,4 +43,3 @@ gather_data <- function() {
     ##x <- merge(x, yearly, by = c("year", "id"))
     ##x <- select(x, -symbol.x)
 }
-

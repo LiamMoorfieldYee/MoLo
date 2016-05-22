@@ -1,9 +1,9 @@
 Package: MoLo
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Relative Strength Predicting Future Returns
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
+Author: Liam Moorfield-Yee and David Loughborough
+Maintainer: <lmoorfieldyee@middlebury.edu>
+Description: Cleans, analyzes and presents stock data from 1998-2007. Functions use relative historical stock performance as a gauge to determine whether or not historical relative strength is a good predictor of future returns under various conditions.
 License: What license is it under?
 LazyData: TRUE

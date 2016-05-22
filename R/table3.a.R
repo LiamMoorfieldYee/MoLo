@@ -5,7 +5,7 @@ table2 <- function() {
 
     x <- x %>% filter(!symbol=="CKXE")
     x <- x %>% filter(!symbol=="3STTCE")
-
+    x <- x[!is.na(x$c52),]
 
     ## only keeping Fridays. If Friday is not a trading day then the last trading
     ## day of the week is used.
@@ -20,8 +20,7 @@ table2 <- function() {
     ## argument. The same is done for c4, c26, and market.performance variables.
 
     x <- x %>% group_by(wk) %>% mutate(CA26.rank = row_number(-ca26.ratio)) %>%
-        mutate(c4.rank = row_number(row_number(-c4))) %>%
-        mutate(c26.rank = row_number(-c26))
+        mutate(c52.rank = row_number(-c52))
 
 
     ## Splitting data up into 3 groups based on market ranks and arranging based
@@ -54,39 +53,27 @@ table2 <- function() {
     ## Creating 4C and 26C summary averages based on 26AC group rankings.
     ## Creating table 1.
 
-    group1.avgs <- x1 %>% group_by(ca26groupings) %>% summarize(avg.C4.ratios = mean(c4),
-                                                                avg.C4.rank = mean(c4.rank),
-                                                                avg.c26.ratios = mean(c26),
-                                                                avg.c26.rank = mean(c26.rank))
+    group1.avgs <- x1 %>% group_by(ca26groupings) %>% summarize(avg.c52.ratios = mean(c52),
+                                                                avg.c52.rank = mean(c52.rank))
 
-    all.stocks.x1 <- x1 %>% ungroup() %>% summarize(avg.C4.ratios = mean(c4),
-                                                    avg.C4.rank = mean(c4.rank),
-                                                    avg.c26.ratios = mean(c26),
-                                                    avg.c26.rank = mean(c26.rank))
+    all.stocks.x1 <- x1 %>% ungroup() %>% summarize(avg.c52.ratios = mean(c52),
+                                                    avg.c52.rank = mean(c52.rank))
     all.stocks.x1$ca26groupings <- "all stocks"
     x1 <- rbind(group1.avgs, all.stocks.x1)
 
-    group2.avgs <- x2 %>% group_by(ca26groupings) %>% summarize(avg.C4.ratios = mean(c4),
-                                                                avg.C4.rank = mean(c4.rank),
-                                                                avg.c26.ratios = mean(c26),
-                                                                avg.c26.rank = mean(c26.rank))
+    group2.avgs <- x2 %>% group_by(ca26groupings) %>% summarize(avg.c52.ratios = mean(c52),
+                                                                avg.c52.rank = mean(c52.rank))
 
-    all.stocks.x2 <- x2 %>% ungroup() %>% summarize(avg.C4.ratios = mean(c4),
-                                                    avg.C4.rank = mean(c4.rank),
-                                                    avg.c26.ratios = mean(c26),
-                                                    avg.c26.rank = mean(c26.rank))
+    all.stocks.x2 <- x2 %>% ungroup() %>% summarize(avg.c52.ratios = mean(c52),
+                                                    avg.c52.rank = mean(c52.rank))
     all.stocks.x2$ca26groupings <- "all stocks"
     x2 <- rbind(group2.avgs, all.stocks.x2)
 
-    group4.avgs <- x4 %>% group_by(ca26groupings) %>% summarize(avg.C4.ratios = mean(c4),
-                                                                avg.C4.rank = mean(c4.rank),
-                                                                avg.c26.ratios = mean(c26),
-                                                                avg.c26.rank = mean(c26.rank))
+    group4.avgs <- x4 %>% group_by(ca26groupings) %>% summarize(avg.c52.ratios = mean(c52),
+                                                                avg.c52.rank = mean(c52.rank))
 
-    all.stocks.x4 <- x4 %>% ungroup() %>% summarize(avg.C4.ratios = mean(c4),
-                                                    avg.C4.rank = mean(c4.rank),
-                                                    avg.c26.ratios = mean(c26),
-                                                    avg.c26.rank = mean(c26.rank))
+    all.stocks.x4 <- x4 %>% ungroup() %>% summarize(avg.c52.ratios = mean(c52),
+                                                    avg.c52.rank = mean(c52.rank))
     all.stocks.x4$ca26groupings <- "all stocks"
     x4 <- rbind(group4.avgs, all.stocks.x4)
 
