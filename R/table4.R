@@ -1,15 +1,32 @@
-table1 <- function() {
-    x <- CA26()
+#' Computing future performance metrics for table4
+#'
+#' Calculating and grouping stocks based on their historical relative strengths
+#' and comparing 52 week returns.
+#'
+#' Resulting table is saved in the data file.
+#'
 
-    ## Removing a couple outliers in the data.
-    x <- x[!is.na(x$c52),]
+table4 <- function() {
+
+
+    data(y)
+
+    x <- y
+
+    ## Getting rid of two outliers that are skewing data.
+
     x <- x %>% filter(!symbol=="CKXE")
     x <- x %>% filter(!symbol=="3STTCE")
+
 
     ## only keeping Fridays. If Friday is not a trading day then the last trading
     ## day of the week is used.
 
     x <- x %>% group_by(id, wk) %>% filter(wday(date)==max(wday(date)))
+
+    ## Removing NA values.
+    x <- x[!is.na(x$c52),]
+
 
     ## Ranking stocks based on their relative strength for each week. The
     ## stocks are grouped by week then each stock is ranked based on its
@@ -28,8 +45,8 @@ table1 <- function() {
     x <- x %>% ungroup() %>% arrange(CA26.rank) %>%
         mutate(groupings = ntile(CA26.rank, 10))
 
-    ## Creating 4C and 26C summary averages based on 26AC group rankings.
-    ## Creating table 1.
+    ## Creating 52C summary averages based on 26AC group rankings.
+    ## Creating table 4.
 
     group.avgs <- x %>% group_by(groupings) %>% summarize(avg.c52.ratios = mean(c52),
                                                           avg.c52.rank = mean(c52.rank))
@@ -39,9 +56,9 @@ table1 <- function() {
 
     all.stock.avg <- all.stock.avg %>% mutate(groupings = "all stocks")
 
-    table.data <- rbind(group.avgs, all.stock.avg)
+    tbl4 <- rbind(group.avgs, all.stock.avg)
 
-    return(table.data)
+    return(devtools::use_data(tbl4))
 
-    ## x <- x %>% group_by(wk) %>% arrange()
+
 }

@@ -1,17 +1,33 @@
-table2 <- function() {
-    x <- CA26()
+#' Computing future performance metrics for table2
+#'
+#' Calculating and grouping stocks based on their historical relative strengths, sub-grouping
+#' by variation ranks, and comparing 4 and 26 week future returns.
+#'
+#' Resulting table is saved in the data file.
+#'
+#'
+#'
+#'
 
-    ## Removing a couple outliers in the data. Removing a couple N/A values from
-    ## volatility measurement (variation26).
+
+table2 <- function() {
+
+    data(y)
+
+    x <- y
+
+    ## Getting rid of two outliers that are skewing data.
 
     x <- x %>% filter(!symbol=="CKXE")
     x <- x %>% filter(!symbol=="3STTCE")
-    x <- x[!is.na(x$variation26),]
+
 
     ## only keeping Fridays. If Friday is not a trading day then the last trading
     ## day of the week is used.
 
     x <- x %>% group_by(id, wk) %>% filter(wday(date)==max(wday(date)))
+
+    ## print(nrow(x))
 
     ## Ranking stocks based on their relative strength for each week. The
     ## stocks are grouped by week then each stock is ranked based on its
@@ -53,8 +69,8 @@ table2 <- function() {
         mutate(ca26groupings = ntile(CA26.rank, 10))
 
 
-    ## Creating 4C and 26C summary averages based on 26AC group rankings.
-    ## Creating table 1.
+    ## Creating 4C and 26C summary averages based on 26AC group rankings for each variation
+    ## group. Creating table 1.
 
     group1.avgs <- x1 %>% group_by(ca26groupings) %>% summarize(avg.C4.ratios = mean(c4),
                                                           avg.C4.rank = mean(c4.rank),
@@ -93,12 +109,13 @@ table2 <- function() {
     x4 <- rbind(group4.avgs, all.stocks.x4)
 
     x1.x2 <- left_join(x1, x2, by = "ca26groupings")
-    all.data <- left_join(x1.x2, x4, by = "ca26groupings")
+    tbl2 <- left_join(x1.x2, x4, by = "ca26groupings")
 
 
 
-    ## Return the tables
-    return(all.data)
+    ## Return and save the table
+
+    return(devtools::use_data(tbl2))
 
 
 }

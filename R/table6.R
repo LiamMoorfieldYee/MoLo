@@ -1,16 +1,37 @@
-table2 <- function() {
-    x <- CA26()
+#' Computing future performance metrics for table2
+#'
+#' Calculating and grouping stocks based on their historical relative strengths, sub-grouping
+#' by market performance, and comparing 52 week future returns.
+#'
+#' Resulting table is saved in the data file.
+#'
 
-    ## Removing a couple outliers in the data.
+
+table6 <- function() {
+
+
+    data(y)
+
+    x <- y
+
+
+    ## Getting rid of two outliers that are skewing data.
 
     x <- x %>% filter(!symbol=="CKXE")
     x <- x %>% filter(!symbol=="3STTCE")
-    x <- x[!is.na(x$c52),]
+
 
     ## only keeping Fridays. If Friday is not a trading day then the last trading
     ## day of the week is used.
 
     x <- x %>% group_by(id, wk) %>% filter(wday(date)==max(wday(date)))
+
+
+    ##Removing NAs
+
+    x <- x[!is.na(x$c52),]
+
+
 
     ## Ranking stocks based on their relative strength for each week. The
     ## stocks are grouped by week then each stock is ranked based on its
@@ -40,7 +61,7 @@ table2 <- function() {
     x4 <- subset(x, groupings==4)
 
 
-    ## Within each volatility group, breaking up stocks into deciles based on their CA26 ranks.
+    ## Within each market rank group, breaking up stocks into deciles based on their CA26 ranks.
 
     x1 <- x1 %>% ungroup() %>% arrange(CA26.rank) %>%
         mutate(ca26groupings = ntile(CA26.rank, 10))
@@ -50,8 +71,9 @@ table2 <- function() {
         mutate(ca26groupings = ntile(CA26.rank, 10))
 
 
-    ## Creating 4C and 26C summary averages based on 26AC group rankings.
-    ## Creating table 1.
+    ## Creating 52C summary averages based on 26AC group rankings. Done for each market rank
+    ## group and then for the entire dataset. The results are then merged back into a final
+    ## dataframe. Creating table 6.
 
     group1.avgs <- x1 %>% group_by(ca26groupings) %>% summarize(avg.c52.ratios = mean(c52),
                                                                 avg.c52.rank = mean(c52.rank))
@@ -78,12 +100,13 @@ table2 <- function() {
     x4 <- rbind(group4.avgs, all.stocks.x4)
 
     x1.x2 <- left_join(x1, x2, by = "ca26groupings")
-    all.data <- left_join(x1.x2, x4, by = "ca26groupings")
+    tbl6 <- left_join(x1.x2, x4, by = "ca26groupings")
 
 
 
-    ## Return the tables
-    return(all.data)
+    ## Return and save the data frame
+
+    return(devtools::use_data(tbl6))
 
 
 }

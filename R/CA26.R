@@ -1,6 +1,56 @@
+#' Loading, cleaning, and calculating performance ratios for data analysis.
+#' Returns a clean data set with relevant metrics for analysis.
+#'
+#'
+#' Merges all datasets from ws.data.
+#'
+#'
+#'
+#' Calculates
+#'
+#'
+
+
+
 CA26 <- function() {
+
+    library(ws.data)
+    library(lubridate)
+    library(dplyr)
+    library(devtools)
+    ##function for gathering data
+    ##Bring in the data from 1998
+    data("daily.1998")
+    data("daily.1999")
+    data("daily.2000")
+    data("daily.2001")
+    data("daily.2002")
+    data("daily.2003")
+    data("daily.2004")
+    data("daily.2005")
+    data("daily.2006")
+    data("daily.2007")
+    data("secref")
+    data("yearly")
+
+    all.daily <- rbind(daily.1998, daily.1999, daily.2000, daily.2001,
+                       daily.2002, daily.2003, daily.2004, daily.2005,
+                       daily.2006, daily.2007)
+
+
+    all.daily <- mutate(all.daily, year = year(v.date),
+                        wk = paste(week(v.date), year, sep = "-"))
+
+    all.daily <- left_join(all.daily, select(yearly, -symbol),
+                           by = c("year", "id"))
+
+    all.daily <- left_join(all.daily, select(secref, -symbol), by = "id")
+
+    all.daily <- tbl_df(all.daily)
+
+    all.daily <- all.daily %>% rename( date = v.date)
     ## Loading up data.
-    x <- gather_data()
+    x <- all.daily
 
     ## Calculating average weekly price for each stock.
 
@@ -69,18 +119,21 @@ CA26 <- function() {
     ## Cleaning and arranging data so that stocks are ordered according to their
     ## relative strengths for each week.
 
-    x <- x %>% select( symbol, date, wk, ca26.ratio, price, variation26,
+    y <- x %>% select( symbol, date, wk, ca26.ratio, price, variation26,
                        wk4price, wk26price, c4, c26, market.performance, market.rank,
                        wk52price, c52)
 
 
-    ## Getting rid of two outliers that are skewing data.
 
-    x <- x %>% filter(!symbol=="CKXE")
-    x <- x %>% filter(!symbol=="3STTCE")
 
     ## Returning cleaned data set.
 
-    return(x)
+    if(!file.exists("/data/y.rda")){
+
+    devtools::use_data(y)
+    }
+    else{}
+
+    return(y)
 
 }

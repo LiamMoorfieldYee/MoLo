@@ -1,0 +1,35 @@
+---
+title: "testfile"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(MoLo)
+library(knitr)
+library(dplyr)
+```
+
+```{r echo = FALSE}
+data(tbl1, package = "MoLo")
+tb1 <- tbl1
+kable(tb1, col.names = c("CA/26 Group Rank", "Average 4/C Ratios", "Average 4/C rank", 
+                         "Average 26/C Ratios", "Average 26/C Rank"))
+```
+
+<center> <h1>TABLE 2 - A</h1> </center>
+<center> <p> 4-Week Performance By Stock Group As Classified To Historical Relative <br>
+Strength Ranks And Subclassified  According To Historical Volatility Ranks </p> </center>
+<center><h5>Volatility Ranks</h5></center>
+                                 Top 25%                       Middle 50%                    Bottom 25%
+```{r echo = FALSE}
+data(tbl2, package = "MoLo")
+tb2 <- tbl2 %>% select(ca26groupings, avg.C4.ratios.x, avg.C4.rank.x, avg.C4.ratios.y, avg.c26.rank.y,
+                       avg.C4.ratios, avg.c26.rank)
+kable(tb2, col.names = c("CA/26 Group Rank", "Average 4/C Ratios", "Average 4/C rank", 
+                         "Average 4/C Ratios", "Average 4/C rank",
+                         "Average 4/C Ratios", "Average 4/C rank"))
+```
+
+
+

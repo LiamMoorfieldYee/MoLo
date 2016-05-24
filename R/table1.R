@@ -1,22 +1,36 @@
-table1 <- function() {
-    x <- CA26()
+#' Computing future performance metrics for table1
+#'
+#' Calculating and grouping stocks based on their historical relative strengths
+#' and comparing 4 and 26 week future returns.
+#'
+#' Resulting table is saved in the data file.
+#'
+#'
+#'
+#'
+#'
+#'
 
-    ## Removing a couple outliers in the data.
+
+table1 <- function() {
+
+
+
+    data(y)
+
+    x <- y
+    ## Getting rid of two outliers that are skewing data.
 
     x <- x %>% filter(!symbol=="CKXE")
     x <- x %>% filter(!symbol=="3STTCE")
+
 
     ## only keeping Fridays. If Friday is not a trading day then the last trading
     ## day of the week is used.
 
     x <- x %>% group_by(id, wk) %>% filter(wday(date)==max(wday(date)))
 
-    ## Ranking stocks based on their relative strength for each week. The
-    ## stocks are grouped by week then each stock is ranked based on its
-    ## ca26.ratio using the row_number function. Default method for the row_number
-    ## function is to assign the lowest values the lowest rank, but we want the
-    ## opposite of this so that we call the function with -ca26.ratio as its
-    ## argument.
+
 
     x <- x %>% group_by(wk) %>% mutate(CA26.rank = row_number(-ca26.ratio)) %>%
         mutate(c4.rank = row_number(row_number(-c4))) %>%
@@ -33,9 +47,9 @@ table1 <- function() {
     ## Creating table 1.
 
     group.avgs <- x %>% group_by(groupings) %>% summarize(avg.C4.ratios = mean(c4),
-                                                  avg.C4.rank = mean(c4.rank),
-                                                  avg.c26.ratios = mean(c26),
-                                                  avg.c26.rank = mean(c26.rank))
+                                                          avg.C4.rank = mean(c4.rank),
+                                                          avg.c26.ratios = mean(c26),
+                                                          avg.c26.rank = mean(c26.rank))
 
     all.stock.avg <- x %>% summarize(avg.C4.ratios = mean(c4),
                                      avg.C4.rank = mean(c4.rank),
@@ -43,9 +57,15 @@ table1 <- function() {
                                      avg.c26.rank = mean(c26.rank))
     all.stock.avg <- all.stock.avg %>% mutate(groupings = 11)
 
-    table.data <- rbind(group.avgs, all.stock.avg)
+    tbl1 <- rbind(group.avgs, all.stock.avg)
 
-    return(table.data)
+    if(!file.exists("data/tbl1.rda")){
+        devtools::use_data(tbl1)
+    }
+    else{
+    }
+
+    return(tbl1)
 
     ## x <- x %>% group_by(wk) %>% arrange()
 }
